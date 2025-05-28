@@ -143,7 +143,16 @@ Model faktorisasi matriks berbasis neural network.
 - **Kompilasi & Pelatihan:** Optimizer Adam, loss BinaryCrossentropy, metrik RootMeanSquaredError. Dilatih selama 100 epoch dengan EarlyStopping (monitor val_loss, patience=3, restore_best_weights=True).
 - **Plot Hasil Pelatihan Keras:**
 ![Model Metrics (RMSE)](metrik_rmse.png)
+- Garis Biru (Train RMSE): Ini menunjukkan nilai Root Mean Squared Error (RMSE) pada data pelatihan (training set) di setiap epoch. Terlihat bahwa Train RMSE terus menurun seiring bertambahnya epoch. Ini wajar, karena model terus belajar untuk mencocokkan data yang digunakan untuk melatihnya.
+- Garis Oranye (Validation RMSE): Ini menunjukkan nilai RMSE pada data validasi (validation set) di setiap epoch. Data validasi adalah data yang tidak digunakan untuk melatih model, sehingga metrik ini memberikan gambaran seberapa baik model dapat menggeneralisasi pada data baru yang belum pernah dilihat sebelumnya.
+    - Pada plot , Validation RMSE awalnya menurun dari epoch 0 ke epoch 1 (dari sekitar 0.36 menjadi ~0.38, ini tampaknya ada kesalahan interpretasi pada nilai awal, Validation RMSE seharusnya dimulai lebih tinggi atau sama dengan Train RMSE di epoch 0 sebelum training dimulai, atau mungkin plot dimulai setelah epoch pertama training. Berdasarkan bentuk kurva, Validation RMSE sebenarnya meningkat dari epoch 0 ke epoch 1, lalu terus meningkat.)
+    - Setelah epoch 0, Validation RMSE cenderung terus meningkat. Ini adalah indikasi kuat bahwa model mulai overfitting. Artinya, model terlalu "menghafal" data training sehingga performanya pada data baru (validasi) justru memburuk.
+- Epoch: Sumbu horizontal menunjukkan jumlah epoch atau iterasi pelatihan yang telah dilalui.
 ![Model Loss](model_loss.png)
+- Garis Biru (Train Loss): Ini menunjukkan nilai fungsi kerugian (loss function, dalam kasus Anda BinaryCrossentropy) pada data pelatihan di setiap epoch. Sama seperti Train RMSE, Train Loss juga terus menurun, menunjukkan model sedang meminimalkan kesalahan pada data training.
+- Garis Oranye (Validation Loss): Ini menunjukkan nilai fungsi kerugian pada data validasi.
+Pada plot Anda, Validation Loss juga menunjukkan pola yang mirip dengan Validation RMSE. Setelah epoch 0, Validation Loss terus meningkat.
+Epoch: Sumbu horizontal menunjukkan jumlah epoch pelatihan.
 - **Insight Plot:** Pelatihan dengan EarlyStopping berhenti pada epoch ke-4, dan bobot terbaik dari epoch ke-1 dikembalikan. Ini menunjukkan val_loss tidak membaik setelah epoch pertama, sehingga pelatihan dihentikan lebih awal untuk mencegah overfitting.
 - **Output Rekomendasi Top-N (Keras)**:
 Produk dengan rating tinggi dari pengguna (histori):

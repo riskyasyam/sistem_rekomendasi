@@ -1,6 +1,7 @@
 # Laporan Proyek Machine Learning - Muhammad Rizky Asyam Haidar
 
 ## Project Overview
+![Header](header.png)
 
 Dalam era digital saat ini, platform e-commerce telah menjadi bagian integral dari pengalaman berbelanja konsumen. Dengan jutaan produk yang tersedia, pengguna seringkali dihadapkan pada tantangan untuk menemukan item yang paling relevan dengan kebutuhan dan preferensi mereka. Kesulitan ini dapat menyebabkan penurunan keterlibatan pengguna, tingkat konversi yang lebih rendah, dan akhirnya mengurangi kepuasan pelanggan. Salah satu solusi paling efektif untuk mengatasi masalah ini adalah dengan mengimplementasikan sistem rekomendasi produk yang cerdas dan personal.
 

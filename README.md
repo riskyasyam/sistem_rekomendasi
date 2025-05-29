@@ -71,6 +71,14 @@ Tautan : [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/d
 - Jumlah data sellers: (3095, 4)
 - Jumlah data product_category_name_translation: (71, 2)
 
+**Kondisi Data Awal (Missing Values):**
+- Setelah dilakukan inspeksi data awal menggunakan metode .info() dan .isnull().sum() pada setiap dataset, ditemukan beberapa kondisi data yang perlu diperhatikan:
+    - Dataset olist_order_reviews_dataset.csv memiliki jumlah missing values yang signifikan pada kolom review_comment_title (87656 missing) dan review_comment_message (58247 missing). Hal ini wajar karena tidak semua pelanggan meninggalkan komentar detail pada ulasan mereka. Kolom review_score yang krusial untuk proyek ini tidak memiliki missing values.
+    - Dataset olist_orders_dataset.csv memiliki missing values pada kolom-kolom terkait waktu pengiriman seperti order_approved_at (160 missing), order_delivered_carrier_date (1783 missing), dan order_delivered_customer_date (2965 missing). Ini mengindikasikan adanya pesanan yang mungkin belum selesai diproses atau dibatalkan.
+    - Dataset olist_products_dataset.csv memiliki missing values pada beberapa kolom fitur produk. Kolom product_category_name memiliki 610 missing values, yang juga berdampak pada kolom fitur lain seperti product_name_lenght, product_description_lenght, dan product_photos_qty yang memiliki jumlah missing values yang sama. Kolom product_weight_g, product_length_cm, product_height_cm, dan product_width_cm masing-masing memiliki 2 missing values.
+    - Dataset lainnya (customer, geolocation, order_items, order_payments, sellers, dan product_category_name_translation) tidak menunjukkan adanya missing values pada kolom-kolomnya.
+- Penanganan missing values ini akan dilakukan pada tahap Data Preparation.
+
 **Deskripsi Variabel Utama yang Digunakan:**
 - olist_customers_dataset.csv:
     - customer_id: ID unik untuk setiap entri pelanggan terkait satu pesanan.
@@ -156,22 +164,24 @@ Model faktorisasi matriks berbasis neural network.
         - Epoch: Sumbu horizontal menunjukkan jumlah epoch pelatihan.
 - **Insight Plot:** Pelatihan dengan EarlyStopping berhenti pada epoch ke-4, dan bobot terbaik dari epoch ke-1 dikembalikan. Ini menunjukkan val_loss tidak membaik setelah epoch pertama, sehingga pelatihan dihentikan lebih awal untuk mencegah overfitting.
 - **Output Rekomendasi Top-N (Keras)**:
-Produk dengan rating tinggi dari pengguna (histori):
-------------
-ID Produk: 47277d35dcfa53f5bee3d98ec3031c8a, Kategori: auto, Rating Asli: 3.0
-------------
+Produk dengan rating tinggi dari histori pengguna:
+| ID Produk                            | Kategori                | Rating Asli |
+| :----------------------------------- | :---------------------- | :---------- |
+| d04857e7b4b708ee8b8b9921163edba3     | auto                    | 5.0         |
+
 Top 10 Rekomendasi Produk:
-------------
-ID Produk: aca2eb7d00ea1a7b8ebd4e68314663af, Kategori: furniture_decor, Prediksi Rating (0-1): 0.58 (Asli: 3.33)
-ID Produk: d1c427060a0f73f6b889a5c7c61f2ac4, Kategori: computers_accessories, Prediksi Rating (0-1): 0.58 (Asli: 3.31)
-ID Produk: 53b36df67ebb7c41585e8d54d6772e08, Kategori: watches_gifts, Prediksi Rating (0-1): 0.58 (Asli: 3.31)
-ID Produk: 154e7e31ebfa092203795c972e5804a6, Kategori: health_beauty, Prediksi Rating (0-1): 0.58 (Asli: 3.30)
-ID Produk: 389d119b48cf3043d311335e499d9c6b, Kategori: garden_tools, Prediksi Rating (0-1): 0.58 (Asli: 3.30)
-ID Produk: bb50f2e236e5eea0100680137654686c, Kategori: health_beauty, Prediksi Rating (0-1): 0.57 (Asli: 3.28)
-ID Produk: e0cf79767c5b016251fe139915c59a26, Kategori: health_beauty, Prediksi Rating (0-1): 0.57 (Asli: 3.28)
-ID Produk: 3dd2a17168ec895c781a9191c1e95ad7, Kategori: computers_accessories, Prediksi Rating (0-1): 0.57 (Asli: 3.28)
-ID Produk: 5a848e4ab52fd5445cdc07aab1c40e48, Kategori: No Category English, Prediksi Rating (0-1): 0.56 (Asli: 3.26)
-ID Produk: 437c05a395e9e47f9762e677a7068ce7, Kategori: health_beauty, Prediksi Rating (0-1): 0.56 (Asli: 3.26)
+| ID Produk                            | Kategori                | Prediksi Rating (Asli) |
+| :----------------------------------- | :---------------------- | :--------------------- |
+| aca2eb7d00ea1a7b8ebd4e68314663af     | furniture_decor        | 3.33                   |
+| d1c427060a0f73f6b889a5c7c61f2ac4     | computers_accessories  | 3.31                   |
+| 53b36df67ebb7c41585e8d54d6772e08     | watches_gifts          | 3.31                   |
+| 154e7e31ebfa092203795c972e5804a6     | health_beauty          | 3.30                   |
+| 389d119b48cf3043d311335e499d9c6b     | garden_tools           | 3.30                   |
+| bb50f2e236e5eea0100680137654686c     | health_beauty          | 3.28                   |
+| e0cf79767c5b016251fe139915c59a26     | health_beauty          | 3.28                   |
+| 3dd2a17168ec895c781a9191c1e95ad7     | computers_accessories  | 3.28                   |
+| 5a848e4ab52fd5445cdc07aab1c40e48     | No Category English     | 3.26                   |
+| 437c05a395e9e47f9762e677a7068ce7     | health_beauty          | 3.26                   |
 
 2. Model Collaborative Filtering dengan Surprise (SVD)
 Pendekatan kedua menggunakan algoritma Singular Value Decomposition (SVD) dari library Surprise.
@@ -183,16 +193,18 @@ Membuat Top-N rekomendasi SVD untuk pengguna: d615a46ee39d41088222d36e46fb5c03
 Fungsi get_top_n_recommendations_svd siap digunakan.
 
 Top 10 rekomendasi produk untuk pengguna d615a46ee39d41088222d36e46fb5c03 (Model SVD):
-  ID Produk: c7b3cf9de7be95b3e09e7a63315685eb, Kategori: luggage_accessories, Prediksi Rating: 4.82
-  ID Produk: f889fb87b505b73de10c18b93352469f, Kategori: health_beauty, Prediksi Rating: 4.79
-  ID Produk: a298a105818dce6878b787e4af6cff7d, Kategori: baby, Prediksi Rating: 4.79
-  ID Produk: f8b624d4e475bb8d1bddf1b65c6a64f6, Kategori: housewares, Prediksi Rating: 4.78
-  ID Produk: 6a8631b72a2f8729b91514db87e771c0, Kategori: electronics, Prediksi Rating: 4.74
-  ID Produk: 425db55cb3b0f5b18a2d9964da31c3c0, Kategori: stationery, Prediksi Rating: 4.74
-  ID Produk: f7f59e6186e10983a061ac7bdb3494d6, Kategori: housewares, Prediksi Rating: 4.74
-  ID Produk: 7e97894cc00196a56d6ec315c68b2353, Kategori: sports_leisure, Prediksi Rating: 4.74
-  ID Produk: 43b54d1fc56ff394092a3dff6be2d39f, Kategori: health_beauty, Prediksi Rating: 4.73
-  ID Produk: 574597aaf385996112490308e37399ce, Kategori: housewares, Prediksi Rating: 4.72
+| ID Produk                            | Kategori              | Prediksi Rating |
+| :----------------------------------- | :-------------------- | :-------------- |
+| c7b3cf9de7be95b3e09e7a63315685eb     | luggage_accessories  | 4.82            |
+| f889fb87b505b73de10c18b93352469f     | health_beauty        | 4.79            |
+| a298a105818dce6878b787e4af6cff7d     | baby                  | 4.79            |
+| f8b624d4e475bb8d1bddf1b65c6a64f6     | housewares            | 4.78            |
+| 6a8631b72a2f8729b91514db87e771c0     | electronics           | 4.74            |
+| 425db55cb3b0f5b18a2d9964da31c3c0     | stationery            | 4.74            |
+| f7f59e6186e10983a061ac7bdb3494d6     | housewares            | 4.74            |
+| 7e97894cc00196a56d6ec315c68b2353     | sports_leisure       | 4.74            |
+| 43b54d1fc56ff394092a3dff6be2d39f     | health_beauty        | 4.73            |
+| 574597aaf385996112490308e37399ce     | housewares            | 4.72            |
 
 **Kelebihan dan Kekurangan Pendekatan yang Dipilih**
 - Collaborative Filtering (Umum):
@@ -220,4 +232,3 @@ MAE: 0.9568
 **Analisis Hasil:**
 
 Model SVD dari library Surprise (RMSE: 1.2226) menunjukkan performa yang lebih baik dibandingkan model Keras (estimasi RMSE skala asli: 1.4404) dengan konfigurasi saat ini. Penggunaan EarlyStopping pada model Keras mencegah overfitting yang lebih parah dengan menghentikan pelatihan saat val_loss tidak lagi menurun. Untuk SVD, MAE sebesar 0.9568 mengindikasikan rata-rata kesalahan prediksi sekitar 0.96 poin pada skala 1-5, yang merupakan hasil yang cukup baik untuk baseline. Performa model Keras yang lebih rendah bisa jadi karena penghentian dini atau memerlukan tuning hyperparameter lebih lanjut dan mungkin eksperimen dengan loss function yang berbeda (misalnya, MSE untuk regresi rating).
-
